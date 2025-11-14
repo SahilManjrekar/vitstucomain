@@ -1812,5 +1812,12 @@ if(tabName==='verification') loadVerificationList();
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
+
+    <!-- your page content -->
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  const supabase = createClient('https://YOUR-PROJECT-ID.supabase.co', 'YOUR-ANON-PUBLIC-KEY')
+</script>
 </body>
 </html>
