@@ -1817,7 +1817,15 @@ if(tabName==='verification') loadVerificationList();
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-  const supabase = createClient('https://YOUR-PROJECT-ID.supabase.co', 'YOUR-ANON-PUBLIC-KEY')
-</script>
+
+  // CONFIGURATION - keep your real values here (anon key is fine for client use)
+  const SUPABASE_URL = 'https://fzblkbvyfdqhfuqcnwwm.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6YmxrYnZ5ZmRxaGZ1cWNud3dtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4OTg0NjIsImV4cCI6MjA3NTQ3NDQ2Mn0.esfVTNiOYlpDgYQnQWQ4w8-uq6_wd_tgbskvWodFUEY';
+
+  // create client (module import returns named function)
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // rest of your code continues unchanged...
+
 </body>
 </html>
