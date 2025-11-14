@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Council Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-badge.management {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .user-badge.secretary {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: 2px solid #667eea;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #667eea;
+        }
+
+        .nav-tab:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .event-poster {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+            font-weight: bold;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .error-message {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #dc3545;
+        }
+
+        .success-message {
+            color: #28a745;
+            background: #d4edda;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #28a745;
+        }
+
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-section h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .nav-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .nav-tabs {
+                width: 100%;
+            }
+
+            .nav-tab {
+                flex: 1;
+                text-align: center;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .event-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="nav-bar">
+                <div class="logo">🎓 Student Council Portal</div>
+                <div class="user-info" id="userInfo">
+                    <button class="btn" onclick="showLogin()">Login</button>
+                </div>
+            </div>
+            <div class="nav-tabs" id="navTabs">
+                <button class="nav-tab active" onclick="showTab('home')">Home</button>
+                <button class="nav-tab" onclick="showTab('events')">Events</button>
+                <button class="nav-tab hidden" id="enrolledTab" onclick="showTab('enrolled')">My Events</button>
+                <button class="nav-tab hidden" id="verificationTab" onclick="showTab('verification')">Verification</button>
+                <button class="nav-tab" onclick="showTab('gallery')">Gallery</button>
+                <button class="nav-tab" onclick="showTab('feedback')">Feedback</button>
+                <button class="nav-tab hidden" id="dashboardTab" onclick="showTab('dashboard')">Dashboard</button>
+            </div>
+        </div>
+
+        <div class="content" id="content">
+            <div id="home" class="tab-content">
+                <div class="welcome-section">
+                    <h1>Welcome to Student Council</h1>
+                    <p>Your gateway to campus events and activities</p>
+                    <p style="font-size: 1em; color: #999;">Login to explore events, enroll, and stay connected!</p>
+                </div>
+            </div>
+
+            <div id="events" class="tab-content hidden">
+                <h2 style="margin-bottom: 20px;">Campus Events</h2>
+                <div id="eventsList">
+                    <div class="loading">Loading events...</div>
+                </div>
+            </div>
+
+            <div id="verification" class="tab-content hidden">
+  <h2>Verification Documents</h2>
+  <div style="margin-bottom:10px;">
+    <button class="btn hidden" id="uploadDocBtn" onclick="showModal('docModal')">Upload Document</button>
+  </div>
+  <div id="verificationList">
+    <div class="loading">Loading verification documents...</div>
+  </div>
+</div>
+
+<div id="docModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="hideModal('docModal')">&times;</span>
+    <h2>Upload Verification Document</h2>
+    <div id="docError"></div>
+
+    <div class="form-group">
+      <label for="docTitle">Title: *</label>
+      <input id="docTitle" type="text" placeholder="Enter document title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="docCouncil">Council: *</label>
+      <input id="docCouncil" type="text" placeholder="Which council? (e.g. Cultural, Sports)" required>
+    </div>
+
+    <div class="form-group">
+      <label for="docAuthority">Authority Incharge: *</label>
+      <input id="docAuthority" type="text" placeholder="Name of authority incharge" required>
+    </div>
+
+    <div class="form-group">
+      <label for="docVenue">Venue (optional):</label>
+      <input id="docVenue" type="text" placeholder="Venue if applicable">
+    </div>
+
+    <div class="form-group">
+      <label for="docBudget">Budget (optional):</label>
+      <input id="docBudget" type="number" placeholder="Enter budget (₹)" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="docDescription">Description:</label>
+      <textarea id="docDescription" rows="2" placeholder="Short description"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="docFile">Upload File:</label>
+      <input id="docFile" type="file" accept="image/*,application/pdf" required>
+    </div>
+
+    <button class="btn" onclick="uploadVerificationDoc()" style="width:100%;">Upload</button>
+  </div>
+</div>
+
+
+
+            <div id="enrolled" class="tab-content hidden">
+                <h2 style="margin-bottom: 20px;">My Enrolled Events</h2>
+                <div id="enrolledEventsList">
+                    <div class="loading">Loading your events...</div>
+                </div>
+            </div>
+
+            <div id="gallery" class="tab-content hidden">
+                <h2 style="margin-bottom: 20px;">Photo Gallery</h2>
+                <button class="btn hidden" id="addPhotoBtn" onclick="showAddPhotoModal()">Add Photo</button>
+                <div id="galleryList">
+                    <div class="loading">Loading gallery...</div>
+                </div>
+            </div>
+
+            <div id="feedback" class="tab-content hidden">
+                <h2 style="margin-bottom: 20px;">Feedback</h2>
+                <div class="form-group">
+                    <label for="feedbackText">Share your feedback:</label>
+                    <textarea id="feedbackText" rows="4" placeholder="Your thoughts and suggestions..."></textarea>
+                </div>
+                <button class="btn" onclick="submitFeedback()">Submit Feedback</button>
+                <div id="feedbackList" style="margin-top: 30px;">
+                    <div class="loading">Loading feedback...</div>
+                </div>
+            </div>
+
+            <div id="dashboard" class="tab-content hidden">
+                <h2 style="margin-bottom: 20px;">Management Dashboard</h2>
+                <div class="stats-grid" id="statsGrid">
+                    <div class="loading">Loading statistics...</div>
+                </div>
+                <h3 style="margin: 30px 0 20px 0;">All Events Management</h3>
+                <button class="btn" onclick="showAddEventModal()">Add New Event</button>
+                <div id="dashboardContent" style="margin-top: 20px;">
+                    <div class="loading">Loading events...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('loginModal')">&times;</span>
+            <h2 style="margin-bottom: 20px; text-align: center;">Login</h2>
+            <div id="loginError"></div>
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password">
+            </div>
+            <button class="btn" onclick="login()" style="width: 100%;">Login</button>
+            <p style="text-align: center; margin-top: 15px;">
+                Don't have an account? <a href="#" onclick="showSignup(); return false;" style="color: #667eea; text-decoration: none; font-weight: 500;">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Remark Modal -->
+<div id="remarkModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="hideModal('remarkModal')">&times;</span>
+    <h2 style="margin-bottom: 15px; text-align: center;">Add Remark</h2>
+    <p id="remarkDocInfo" style="font-size: 14px; color: #555; margin-bottom: 10px;"></p>
+    <textarea id="remarkText" rows="4" placeholder="Enter remark (optional)..." style="width: 100%; border-radius: 10px; border: 1px solid #ddd; padding: 10px; resize: vertical;"></textarea>
+    <div style="margin-top: 15px; text-align: center;">
+      <button class="btn btn-success" onclick="submitRemark('approved')">Approve</button>
+      <button class="btn btn-danger" onclick="submitRemark('rejected')">Reject</button>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('signupModal')">&times;</span>
+            <h2 style="margin-bottom: 20px; text-align: center;">Sign Up</h2>
+            <div id="signupError"></div>
+            <div class="form-group">
+                <label for="signupUsername">Username:</label>
+                <input type="text" id="signupUsername" placeholder="Choose a username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="signupEmail">Email:</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="signupPassword">Password:</label>
+                <input type="password" id="signupPassword" placeholder="Choose a password (min 6 characters)" autocomplete="new-password">
+            </div>
+            <button class="btn" onclick="signup()" style="width: 100%;">Sign Up</button>
+            <p style="text-align: center; margin-top: 15px;">
+                Already have an account? <a href="#" onclick="showLogin(); return false;" style="color: #667eea; text-decoration: none; font-weight: 500;">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Add/Edit Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('eventModal')">&times;</span>
+            <h2 style="margin-bottom: 20px; text-align: center;" id="eventModalTitle">Add New Event</h2>
+            <div id="eventError"></div>
+            <input type="hidden" id="eventId">
+            <div class="form-group">
+                <label for="eventTitle">Title: *</label>
+                <input type="text" id="eventTitle" placeholder="Event title" required>
+            </div>
+            <div class="form-group">
+                <label for="eventDate">Date: *</label>
+                <input type="date" id="eventDate" required>
+            </div>
+            <div class="form-group">
+                <label for="eventDescription">Description:</label>
+                <textarea id="eventDescription" rows="3" placeholder="Event description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="eventLocation">Location: *</label>
+                <input type="text" id="eventLocation" placeholder="Event location" required>
+            </div>
+            <div class="form-group">
+                <label for="eventMaxParticipants">Max Participants:</label>
+                <input type="number" id="eventMaxParticipants" value="100" min="1">
+            </div>
+            <div class="form-group">
+                <label for="eventFee">Fee (₹):</label>
+                <input type="number" id="eventFee" value="0" min="0">
+            </div>
+            <div class="form-group">
+                <label for="eventPoster">Poster Image:</label>
+                <input type="file" id="eventPoster" accept="image/*">
+                <div id="currentPoster" style="margin-top: 10px;"></div>
+            </div>
+            <button class="btn" onclick="saveEvent()" style="width: 100%;">Save Event</button>
+        </div>
+    </div>
+
+    <!-- Add Photo Modal -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('photoModal')">&times;</span>
+            <h2 style="margin-bottom: 20px; text-align: center;">Add Photo to Gallery</h2>
+            <div id="photoError"></div>
+            <div class="form-group">
+                <label for="photoTitle">Title: *</label>
+                <input type="text" id="photoTitle" placeholder="Photo title" required>
+            </div>
+            <div class="form-group">
+                <label for="photoDescription">Description:</label>
+                <textarea id="photoDescription" rows="2" placeholder="Photo description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="photoFile">Photo: *</label>
+                <input type="file" id="photoFile" accept="image/*" required>
+            </div>
+            <button class="btn" onclick="addPhoto()" style="width: 100%;">Upload Photo</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // CONFIGURATION
+        const SUPABASE_URL = 'https://fzblkbvyfdqhfuqcnwwm.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6YmxrYnZ5ZmRxaGZ1cWNud3dtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4OTg0NjIsImV4cCI6MjA3NTQ3NDQ2Mn0.esfVTNiOYlpDgYQnQWQ4w8-uq6_wd_tgbskvWodFUEY';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let currentUserProfile = null;
+        let editingEventId = null;
+
+        // Initialize app
+        async function init() {
+            console.log('Initializing application...');
+            
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                console.log('Active session found');
+                await loadUserProfile(session.user.id);
+            }
+            
+            await loadEvents();
+            await loadGallery();
+            await loadFeedback();
+            
+            console.log('Initialization complete');
+        }
+
+        // ---------- Document Verification ----------
+async function uploadVerificationDoc() {
+  if (!currentUserProfile || currentUserProfile.user_type !== 'secretary') {
+    showToast('Only secretaries can upload documents', 'error');
+    return;
+  }
+
+  // Gather form inputs
+  const title = document.getElementById('docTitle').value.trim();
+  const council = document.getElementById('docCouncil').value.trim();
+  const authority = document.getElementById('docAuthority').value.trim();
+  const venue = document.getElementById('docVenue').value.trim();
+  const budget = document.getElementById('docBudget').value.trim();
+  const desc = document.getElementById('docDescription').value.trim();
+  const file = document.getElementById('docFile').files[0];
+  const err = document.getElementById('docError');
+  err.innerHTML = '';
+
+  // Validation
+  if (!title || !council || !authority) {
+    err.innerHTML = '<div class="error-message">Please fill all required fields (Title, Council, Authority)</div>';
+    return;
+  }
+  if (!file) {
+    err.innerHTML = '<div class="error-message">Choose a document first.</div>';
+    return;
+  }
+
+  try {
+    const ext = file.name.split('.').pop();
+    const path = `docs/${Date.now()}_${Math.random().toString(36).substr(2,8)}.${ext}`;
+    const { error: upErr } = await supabase.storage.from('user-docs').upload(path, file);
+    if (upErr) throw upErr;
+
+    const { data: urlData } = supabase.storage.from('user-docs').getPublicUrl(path);
+    const url = urlData.publicUrl;
+
+    const { error } = await supabase.from('document_verifications').insert([{
+      user_id: currentUserProfile.id,
+      username: currentUserProfile.username,
+      document_path: path,
+      document_url: url,
+      title,
+      council,
+      authority_incharge: authority,
+      venue: venue || null,
+      budget: budget ? parseFloat(budget) : null,
+      description: desc || null
+    }]);
+
+    if (error) throw error;
+    hideModal('docModal');
+    showToast('Document submitted for verification', 'success');
+    loadVerificationList();
+  } catch (e) {
+    err.innerHTML = `<div class="error-message">${e.message}</div>`;
+  }
+}
+
+
+async function loadVerificationList(){
+  const c=document.getElementById('verificationList');
+  c.innerHTML='<div class="loading">Loading...</div>';
+  const {data, error}=await supabase.from('document_verifications').select('*').order('created_at',{ascending:false});
+  if(error){c.innerHTML='<p style="color:red;text-align:center;">Error loading</p>';return;}
+  if(!data.length){c.innerHTML='<p style="text-align:center;">No documents yet.</p>';return;}
+  const isM=currentUserProfile.user_type==='management';
+  const html=data.map(d=>`
+    <div class="event-card" style="margin-bottom:10px;">
+      <h3>${d.title || 'Untitled Document'}</h3>
+<p><strong>Council:</strong> ${d.council || 'N/A'}</p>
+<p><strong>Authority Incharge:</strong> ${d.authority_incharge || 'N/A'}</p>
+${d.venue ? `<p><strong>Venue:</strong> ${d.venue}</p>` : ''}
+${d.budget ? `<p><strong>Budget:</strong> ₹${d.budget}</p>` : ''}
+<p><strong>Description:</strong> ${d.description || '—'}</p>
+<p>Status: <b>${d.status}</b></p>
+${d.remark ? `
+  <div class="remark-box">
+    <strong>Principal Remark:</strong>
+    <p>${d.remark}</p>
+  </div>
+` : ''}
+
+${d.remark ? `
+  <div style="
+    background: #fff8d9;
+    border-left: 4px solid #f1c40f;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+  ">
+    <strong>Principal Remark:</strong>
+    <p style="margin-top: 5px; color: #555;">${d.remark}</p>
+  </div>
+` : ''}
+<button class="btn btn-small" onclick="viewDoc('${d.document_url}')">View</button>
+
+
+      ${isM&&d.status==='pending'?`
+        <button class="btn btn-success btn-small" onclick="reviewDoc('${d.id}','approved')">Approve</button>
+        <button class="btn btn-danger btn-small" onclick="reviewDoc('${d.id}','rejected')">Reject</button>`:''}
+    </div>`).join('');
+  c.innerHTML=html;
+}
+
+function viewDoc(url){
+  window.open(url,'_blank');
+}
+
+async function reviewDoc(id, status) {
+  let remark = '';
+  if (status === 'approved' || status === 'rejected') {
+    remark = prompt(`Enter remark for this document (optional):`, '');
+  }
+
+
+
+let currentReviewDocId = null;
+
+function reviewDoc(id, status) {
+  // open modal for remark entry
+  currentReviewDocId = id;
+  document.getElementById('remarkModal').dataset.status = status;
+  
+  const docInfo = document.getElementById('remarkDocInfo');
+  docInfo.innerHTML = `You are about to <b>${status.toUpperCase()}</b> this document.<br>Optionally add a remark below.`;
+
+  document.getElementById('remarkText').value = '';
+  showModal('remarkModal');
+}
+
+async function submitRemark(forcedStatus = null) {
+  const id = currentReviewDocId;
+  const status = forcedStatus || document.getElementById('remarkModal').dataset.status;
+  const remark = document.getElementById('remarkText').value.trim();
+
+  if (!id || !status) {
+    showToast('Error: Missing document details', 'error');
+    return;
+  }
+
+  const updateData = {
+    status,
+    reviewed_by: currentUserProfile.id,
+    reviewed_at: new Date(),
+    remark: remark || null
+  };
+
+  const { error } = await supabase
+    .from('document_verifications')
+    .update(updateData)
+    .eq('id', id);
+
+  if (error) {
+    showToast(error.message, 'error');
+  } else {
+    showToast(`Document ${status} successfully`, 'success');
+    hideModal('remarkModal');
+    loadVerificationList();
+  }
+}
+
+
+
+  const updateData = {
+    status,
+    reviewed_by: currentUserProfile.id,
+    reviewed_at: new Date(),
+    remark: remark || null
+  };
+
+  const { error } = await supabase
+    .from('document_verifications')
+    .update(updateData)
+    .eq('id', id);
+
+  if (error) showToast(error.message, 'error');
+  else {
+    showToast(`Marked ${status}`, 'success');
+    loadVerificationList();
+  }
+}
+
+
+        // Authentication Functions
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.innerHTML = '';
+
+            if (!email || !password) {
+                errorDiv.innerHTML = '<div class="error-message">Please fill in all fields</div>';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) throw error;
+
+                console.log('Login successful');
+                await loadUserProfile(data.user.id);
+                hideModal('loginModal');
+                showToast('Login successful!', 'success');
+                
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.innerHTML = `<div class="error-message">${error.message}</div>`;
+            }
+        }
+
+        async function signup() {
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const errorDiv = document.getElementById('signupError');
+
+            errorDiv.innerHTML = '';
+
+            if (!username || !email || !password) {
+                errorDiv.innerHTML = '<div class="error-message">Please fill in all fields</div>';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorDiv.innerHTML = '<div class="error-message">Password must be at least 6 characters</div>';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            username: username,
+                            user_type: 'student'
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                console.log('Signup successful');
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                hideModal('signupModal');
+                showToast('Account created successfully! Please login.', 'success');
+                showLogin();
+                
+                document.getElementById('signupUsername').value = '';
+                document.getElementById('signupEmail').value = '';
+                document.getElementById('signupPassword').value = '';
+            } catch (error) {
+                console.error('Signup error:', error);
+                errorDiv.innerHTML = `<div class="error-message">${error.message}</div>`;
+            }
+        }
+
+        async function logout() {
+            try {
+                await supabase.auth.signOut();
+                currentUser = null;
+                currentUserProfile = null;
+                updateUI();
+                showTab('home');
+                showToast('Logged out successfully', 'success');
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        async function loadUserProfile(userId) {
+            console.log('Loading profile for user:', userId);
+            
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+
+                if (error) throw error;
+
+                if (data) {
+                    currentUserProfile = data;
+                    currentUser = data.username;
+                    console.log('Profile loaded:', data.user_type);
+                    updateUI();
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showToast('Error loading profile. Please try again.', 'error');
+            }
+        }
+
+        function updateUI() {
+            const userInfo = document.getElementById('userInfo');
+            const enrolledTab = document.getElementById('enrolledTab');
+            const dashboardTab = document.getElementById('dashboardTab');
+            const addPhotoBtn = document.getElementById('addPhotoBtn');
+
+            if (currentUserProfile) {
+                const badgeClass = currentUserProfile.user_type === 'management' 
+                    ? 'user-badge management' 
+                    : currentUserProfile.user_type === 'secretary'
+                    ? 'user-badge secretary'
+                    : 'user-badge';
+
+                userInfo.innerHTML = `
+                    <div class="${badgeClass}">${currentUserProfile.user_type.toUpperCase()}: ${currentUserProfile.username}</div>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                `;
+
+                enrolledTab.classList.add('hidden');
+                dashboardTab.classList.add('hidden');
+                addPhotoBtn.classList.add('hidden');
+
+                if (currentUserProfile.user_type === 'student') {
+                    enrolledTab.classList.remove('hidden');
+                }
+                
+                if (currentUserProfile.user_type === 'secretary' || currentUserProfile.user_type === 'management') {
+                    dashboardTab.classList.remove('hidden');
+                    addPhotoBtn.classList.remove('hidden');
+                }
+
+                loadEvents();
+            } else {
+                userInfo.innerHTML = '<button class="btn" onclick="showLogin()">Login</button>';
+                enrolledTab.classList.add('hidden');
+                dashboardTab.classList.add('hidden');
+                addPhotoBtn.classList.add('hidden');
+            }
+
+const verificationTab=document.getElementById('verificationTab');
+  const uploadDocBtn=document.getElementById('uploadDocBtn');
+
+  if(currentUserProfile){
+    if(['secretary','management'].includes(currentUserProfile.user_type)){
+      verificationTab.classList.remove('hidden');
+    }else verificationTab.classList.add('hidden');
+
+    if(currentUserProfile.user_type==='secretary')
+         uploadDocBtn.classList.remove('hidden');
+    else uploadDocBtn.classList.add('hidden');
+  }else{
+    verificationTab.classList.add('hidden');
+    uploadDocBtn.classList.add('hidden');
+  }
+
+        }
+
+        // Event Management Functions
+        async function loadEvents() {
+            try {
+                const { data: events, error } = await supabase
+                    .from('events')
+                    .select(`
+                        *,
+                        enrollments (
+                            id,
+                            user_id,
+                            payment_status
+                        )
+                    `)
+                    .order('date', { ascending: true });
+
+                if (error) throw error;
+
+                const eventsList = document.getElementById('eventsList');
+                const dashboardContent = document.getElementById('dashboardContent');
+                const isManagement = currentUserProfile && (currentUserProfile.user_type === 'secretary' || currentUserProfile.user_type === 'management');
+                
+                if (!events || events.length === 0) {
+                    const emptyMsg = '<p style="text-align: center; color: #666;">No events available at the moment.</p>';
+                    if (eventsList) eventsList.innerHTML = emptyMsg;
+                    if (dashboardContent) dashboardContent.innerHTML = emptyMsg;
+                    return;
+                }
+
+                const eventsHTML = events.map(event => {
+                    const enrolledCount = event.enrollments?.length || 0;
+                    const isEnrolled = currentUserProfile && event.enrollments?.some(e => e.user_id === currentUserProfile.id);
+                    const canEnroll = currentUserProfile?.user_type === 'student' && !isEnrolled && enrolledCount < event.max_participants;
+                    const isFull = enrolledCount >= event.max_participants;
+
+                    return `
+                        <div class="event-card">
+                            ${event.poster_url ? `<img src="${event.poster_url}" class="event-poster" alt="${event.title}">` : ''}
+                            <h3>${event.title}</h3>
+                            <p><strong>📅 Date:</strong> ${new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            <p><strong>📍 Location:</strong> ${event.location}</p>
+                            <p><strong>💰 Fee:</strong> ₹${event.fee}</p>
+                            <p><strong>👥 Enrolled:</strong> ${enrolledCount}/${event.max_participants} ${isFull ? '(Full)' : ''}</p>
+                            ${event.description ? `<p style="margin-top: 10px;">${event.description}</p>` : ''}
+                            <div class="event-actions">
+                                ${canEnroll && !isFull ? `<button class="btn btn-success btn-small" onclick="enrollEvent('${event.id}', ${event.fee})">Enroll Now</button>` : ''}
+                                ${isEnrolled ? `<button class="btn btn-danger btn-small" onclick="unenrollEvent('${event.id}')">Unenroll</button>` : ''}
+                                ${!currentUserProfile ? `<button class="btn btn-small" onclick="showLogin()">Login to Enroll</button>` : ''}
+                                ${isManagement ? `
+                                    <button class="btn btn-warning btn-small" onclick="editEvent('${event.id}')">Edit</button>
+                                    <button class="btn btn-danger btn-small" onclick="deleteEvent('${event.id}', '${event.title}')">Delete</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                if (eventsList) eventsList.innerHTML = eventsHTML;
+                if (dashboardContent) {
+                    dashboardContent.innerHTML = eventsHTML;
+                    loadDashboardStats();
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+                const errorMsg = '<p style="text-align: center; color: #dc3545;">Error loading events. Please refresh the page.</p>';
+                const eventsList = document.getElementById('eventsList');
+                const dashboardContent = document.getElementById('dashboardContent');
+                if (eventsList) eventsList.innerHTML = errorMsg;
+                if (dashboardContent) dashboardContent.innerHTML = errorMsg;
+            }
+        }
+
+        async function loadDashboardStats() {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                return;
+            }
+
+            try {
+                const [eventsRes, enrollmentsRes, feedbackRes] = await Promise.all([
+                    supabase.from('events').select('id', { count: 'exact' }),
+                    supabase.from('enrollments').select('id', { count: 'exact' }),
+                    supabase.from('feedback').select('id', { count: 'exact' })
+                ]);
+
+                const statsGrid = document.getElementById('statsGrid');
+                statsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <h3>${eventsRes.count || 0}</h3>
+                        <p>Total Events</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${enrollmentsRes.count || 0}</h3>
+                        <p>Total Enrollments</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${feedbackRes.count || 0}</h3>
+                        <p>Feedback Received</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function enrollEvent(eventId, fee) {
+            if (!currentUserProfile) {
+                showToast('Please login to enroll', 'error');
+                showLogin();
+                return;
+            }
+
+            if (currentUserProfile.user_type !== 'student') {
+                showToast('Only students can enroll in events', 'error');
+                return;
+            }
+
+            try {
+                const paymentStatus = fee > 0 ? 'pending' : 'free';
+                const qrData = {
+                    event_id: eventId,
+                    user_id: currentUserProfile.id,
+                    timestamp: new Date().toISOString()
+                };
+
+                const { error } = await supabase
+                    .from('enrollments')
+                    .insert([{
+                        event_id: eventId,
+                        user_id: currentUserProfile.id,
+                        payment_status: paymentStatus,
+                        amount: fee,
+                        qr_code_data: qrData
+                    }]);
+
+                if (error) throw error;
+
+                await logActivity('enrolled_event', `Enrolled in event`);
+                showToast('Successfully enrolled in event!', 'success');
+                await loadEvents();
+                await loadEnrolledEvents();
+            } catch (error) {
+                console.error('Enrollment error:', error);
+                showToast(error.message || 'Failed to enroll', 'error');
+            }
+        }
+
+        async function unenrollEvent(eventId) {
+            if (!confirm('Are you sure you want to unenroll from this event?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('enrollments')
+                    .delete()
+                    .eq('event_id', eventId)
+                    .eq('user_id', currentUserProfile.id);
+
+                if (error) throw error;
+
+                showToast('Successfully unenrolled from event', 'success');
+                await loadEvents();
+                await loadEnrolledEvents();
+            } catch (error) {
+                console.error('Unenroll error:', error);
+                showToast('Failed to unenroll', 'error');
+            }
+        }
+
+        async function loadEnrolledEvents() {
+            if (!currentUserProfile) return;
+
+            try {
+                const { data: enrollments, error } = await supabase
+                    .from('enrollments')
+                    .select(`
+                        *,
+                        events (*)
+                    `)
+                    .eq('user_id', currentUserProfile.id)
+                    .order('created_at', { ascending: false });
+
+                const list = document.getElementById('enrolledEventsList');
+                
+                if (!enrollments || enrollments.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #666;">You have not enrolled in any events yet.</p>';
+                    return;
+                }
+
+                list.innerHTML = enrollments.map(enrollment => {
+                    const event = enrollment.events;
+                    if (!event) return '';
+                    
+                    return `
+                        <div class="event-card">
+                            ${event.poster_url ? `<img src="${event.poster_url}" class="event-poster" alt="${event.title}">` : ''}
+                            <h3>${event.title}</h3>
+                            <p><strong>📅 Date:</strong> ${new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            <p><strong>📍 Location:</strong> ${event.location}</p>
+                            <p><strong>💳 Payment Status:</strong> <span style="text-transform: capitalize; font-weight: 500;">${enrollment.payment_status}</span></p>
+                            ${enrollment.amount > 0 ? `<p><strong>💰 Amount:</strong> ₹${enrollment.amount}</p>` : ''}
+                            <div class="qr-container" id="qr-${enrollment.id}"></div>
+                        </div>
+                    `;
+                }).join('');
+
+                setTimeout(() => {
+                    enrollments.forEach(enrollment => {
+                        const qrDiv = document.getElementById(`qr-${enrollment.id}`);
+                        if (qrDiv && enrollment.qr_code_data) {
+                            qrDiv.innerHTML = '';
+                            new QRCode(qrDiv, {
+                                text: JSON.stringify(enrollment.qr_code_data),
+                                width: 200,
+                                height: 200
+                            });
+                        }
+                    });
+                }, 100);
+            } catch (error) {
+                console.error('Error loading enrolled events:', error);
+                document.getElementById('enrolledEventsList').innerHTML = '<p style="text-align: center; color: #dc3545;">Error loading your events.</p>';
+            }
+        }
+
+        function showAddEventModal() {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                showToast('Unauthorized - Only secretary and management can add events', 'error');
+                return;
+            }
+            
+            editingEventId = null;
+            document.getElementById('eventModalTitle').textContent = 'Add New Event';
+            document.getElementById('eventId').value = '';
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventDescription').value = '';
+            document.getElementById('eventLocation').value = '';
+            document.getElementById('eventMaxParticipants').value = '100';
+            document.getElementById('eventFee').value = '0';
+            document.getElementById('eventPoster').value = '';
+            document.getElementById('currentPoster').innerHTML = '';
+            document.getElementById('eventError').innerHTML = '';
+            
+            showModal('eventModal');
+        }
+
+        async function editEvent(eventId) {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                showToast('Unauthorized', 'error');
+                return;
+            }
+
+            try {
+                const { data: event, error } = await supabase
+                    .from('events')
+                    .select('*')
+                    .eq('id', eventId)
+                    .single();
+
+                if (error) throw error;
+
+                editingEventId = eventId;
+                document.getElementById('eventModalTitle').textContent = 'Edit Event';
+                document.getElementById('eventId').value = eventId;
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventDate').value = event.date;
+                document.getElementById('eventDescription').value = event.description || '';
+                document.getElementById('eventLocation').value = event.location;
+                document.getElementById('eventMaxParticipants').value = event.max_participants;
+                document.getElementById('eventFee').value = event.fee;
+                document.getElementById('eventPoster').value = '';
+                
+                if (event.poster_url) {
+                    document.getElementById('currentPoster').innerHTML = `
+                        <p style="font-size: 12px; color: #666;">Current poster:</p>
+                        <img src="${event.poster_url}" style="max-width: 200px; border-radius: 8px; margin-top: 5px;">
+                        <p style="font-size: 12px; color: #999; margin-top: 5px;">Upload a new image to replace</p>
+                    `;
+                } else {
+                    document.getElementById('currentPoster').innerHTML = '';
+                }
+                
+                document.getElementById('eventError').innerHTML = '';
+                showModal('eventModal');
+            } catch (error) {
+                console.error('Error loading event:', error);
+                showToast('Failed to load event details', 'error');
+            }
+        }
+
+        async function saveEvent() {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                showToast('Unauthorized', 'error');
+                return;
+            }
+
+            const eventId = editingEventId;
+            const title = document.getElementById('eventTitle').value.trim();
+            const date = document.getElementById('eventDate').value;
+            const description = document.getElementById('eventDescription').value.trim();
+            const location = document.getElementById('eventLocation').value.trim();
+            const maxParticipants = parseInt(document.getElementById('eventMaxParticipants').value);
+            const fee = parseFloat(document.getElementById('eventFee').value);
+            const posterFile = document.getElementById('eventPoster').files[0];
+            const errorDiv = document.getElementById('eventError');
+
+            errorDiv.innerHTML = '';
+
+            if (!title || !date || !location) {
+                errorDiv.innerHTML = '<div class="error-message">Please fill in all required fields (Title, Date, Location)</div>';
+                return;
+            }
+
+            if (maxParticipants < 1) {
+                errorDiv.innerHTML = '<div class="error-message">Max participants must be at least 1</div>';
+                return;
+            }
+
+            if (fee < 0) {
+                errorDiv.innerHTML = '<div class="error-message">Fee cannot be negative</div>';
+                return;
+            }
+
+            try {
+                let posterUrl = null;
+
+                if (posterFile) {
+                    const fileExt = posterFile.name.split('.').pop();
+                    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                    
+                    const { error: uploadError } = await supabase.storage
+                        .from('event-posters')
+                        .upload(fileName, posterFile, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+
+                    if (uploadError) {
+                        console.error('Upload error:', uploadError);
+                        throw new Error('Failed to upload poster: ' + uploadError.message);
+                    }
+
+                    const { data: urlData } = supabase.storage
+                        .from('event-posters')
+                        .getPublicUrl(fileName);
+                    
+                    posterUrl = urlData.publicUrl;
+                }
+
+                const eventData = {
+                    title,
+                    date,
+                    description: description || null,
+                    location,
+                    max_participants: maxParticipants,
+                    fee,
+                    budget: fee * maxParticipants
+                };
+
+                if (posterUrl) {
+                    eventData.poster_url = posterUrl;
+                }
+
+                if (eventId) {
+                    const { error } = await supabase
+                        .from('events')
+                        .update(eventData)
+                        .eq('id', eventId);
+
+                    if (error) throw error;
+                    await logActivity('updated_event', `Updated event: ${title}`);
+                    showToast('Event updated successfully!', 'success');
+                } else {
+                    eventData.created_by = currentUserProfile.id;
+                    
+                    const { error } = await supabase
+                        .from('events')
+                        .insert([eventData]);
+
+                    if (error) throw error;
+                    await logActivity('created_event', `Created event: ${title}`);
+                    showToast('Event added successfully!', 'success');
+                }
+
+                hideModal('eventModal');
+                await loadEvents();
+            } catch (error) {
+                console.error('Save event error:', error);
+                errorDiv.innerHTML = `<div class="error-message">${error.message}</div>`;
+            }
+        }
+
+        async function deleteEvent(eventId, eventTitle) {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                showToast('Unauthorized', 'error');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete "${eventTitle}"? This will also remove all enrollments.`)) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('events')
+                    .delete()
+                    .eq('id', eventId);
+
+                if (error) throw error;
+
+                await logActivity('deleted_event', `Deleted event: ${eventTitle}`);
+                showToast('Event deleted successfully', 'success');
+                await loadEvents();
+            } catch (error) {
+                console.error('Delete event error:', error);
+                showToast('Failed to delete event: ' + error.message, 'error');
+            }
+        }
+
+        // Gallery Functions
+        async function loadGallery() {
+            try {
+                const { data: photos, error } = await supabase
+                    .from('gallery_photos')
+                    .select(`
+                        *,
+                        profiles (username)
+                    `)
+                    .order('uploaded_at', { ascending: false });
+
+                const list = document.getElementById('galleryList');
+                
+                if (!photos || photos.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #666;">No photos in gallery yet.</p>';
+                    return;
+                }
+
+                const isManagement = currentUserProfile && (currentUserProfile.user_type === 'secretary' || currentUserProfile.user_type === 'management');
+
+                list.innerHTML = photos.map(photo => `
+                    <div class="event-card">
+                        <img src="${photo.image_url}" class="event-poster" alt="${photo.title}">
+                        <h3>${photo.title}</h3>
+                        ${photo.description ? `<p>${photo.description}</p>` : ''}
+                        <p style="color: #999; font-size: 14px; margin-top: 10px;">📸 By: ${photo.profiles?.username || 'Unknown'}</p>
+                        <p style="color: #999; font-size: 12px;">${new Date(photo.uploaded_at).toLocaleDateString()}</p>
+                        ${isManagement ? `
+                            <div class="event-actions">
+                                <button class="btn btn-danger btn-small" onclick="deletePhoto('${photo.id}', '${photo.title}')">Delete</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+                document.getElementById('galleryList').innerHTML = '<p style="text-align: center; color: #dc3545;">Error loading gallery.</p>';
+            }
+        }
+
+        function showAddPhotoModal() {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                showToast('Unauthorized', 'error');
+                return;
+            }
+
+            document.getElementById('photoTitle').value = '';
+            document.getElementById('photoDescription').value = '';
+            document.getElementById('photoFile').value = '';
+            document.getElementById('photoError').innerHTML = '';
+            showModal('photoModal');
+        }
+
+        async function addPhoto() {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                showToast('Unauthorized', 'error');
+                return;
+            }
+
+            const title = document.getElementById('photoTitle').value.trim();
+            const description = document.getElementById('photoDescription').value.trim();
+            const photoFile = document.getElementById('photoFile').files[0];
+            const errorDiv = document.getElementById('photoError');
+
+            errorDiv.innerHTML = '';
+
+            if (!title || !photoFile) {
+                errorDiv.innerHTML = '<div class="error-message">Please provide title and photo</div>';
+                return;
+            }
+
+            try {
+                const fileExt = photoFile.name.split('.').pop();
+                const fileName = `gallery_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                
+                const { error: uploadError } = await supabase.storage
+                    .from('event-posters')
+                    .upload(fileName, photoFile, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    throw new Error('Failed to upload photo: ' + uploadError.message);
+                }
+
+                const { data: urlData } = supabase.storage
+                    .from('event-posters')
+                    .getPublicUrl(fileName);
+                
+                const imageUrl = urlData.publicUrl;
+
+                const { error } = await supabase
+                    .from('gallery_photos')
+                    .insert([{
+                        title,
+                        description: description || null,
+                        image_url: imageUrl,
+                        uploaded_by: currentUserProfile.id
+                    }]);
+
+                if (error) throw error;
+
+                await logActivity('added_photo', `Added photo: ${title}`);
+                hideModal('photoModal');
+                showToast('Photo added to gallery!', 'success');
+                await loadGallery();
+            } catch (error) {
+                console.error('Add photo error:', error);
+                errorDiv.innerHTML = `<div class="error-message">${error.message}</div>`;
+            }
+        }
+
+        async function deletePhoto(photoId, photoTitle) {
+            if (!currentUserProfile || (currentUserProfile.user_type !== 'secretary' && currentUserProfile.user_type !== 'management')) {
+                showToast('Unauthorized', 'error');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete "${photoTitle}"?`)) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('gallery_photos')
+                    .delete()
+                    .eq('id', photoId);
+
+                if (error) throw error;
+
+                await logActivity('deleted_photo', `Deleted photo: ${photoTitle}`);
+                showToast('Photo deleted successfully', 'success');
+                await loadGallery();
+            } catch (error) {
+                console.error('Delete photo error:', error);
+                showToast('Failed to delete photo: ' + error.message, 'error');
+            }
+        }
+
+        // Feedback Functions
+        async function loadFeedback() {
+            try {
+                const { data: feedbacks, error } = await supabase
+                    .from('feedback')
+                    .select(`
+                        *,
+                        profiles (username)
+                    `)
+                    .order('created_at', { ascending: false });
+
+                const list = document.getElementById('feedbackList');
+                
+                if (!feedbacks || feedbacks.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #666;">No feedback submitted yet. Be the first!</p>';
+                    return;
+                }
+
+                const isManagement = currentUserProfile && currentUserProfile.user_type === 'management';
+
+                list.innerHTML = feedbacks.map(fb => `
+                    <div class="event-card">
+                        <p><strong>💬 ${fb.profiles?.username || fb.author_name || 'Anonymous'}</strong></p>
+                        <p style="margin-top: 10px;">${fb.text}</p>
+                        <p style="color: #999; font-size: 12px; margin-top: 10px;">📅 ${new Date(fb.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        ${isManagement ? `
+                            <div class="event-actions">
+                                <button class="btn btn-danger btn-small" onclick="deleteFeedback('${fb.id}')">Delete</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading feedback:', error);
+                document.getElementById('feedbackList').innerHTML = '<p style="text-align: center; color: #dc3545;">Error loading feedback.</p>';
+            }
+        }
+
+        async function submitFeedback() {
+            const text = document.getElementById('feedbackText').value.trim();
+            
+            if (!text) {
+                showToast('Please enter your feedback', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('feedback')
+                    .insert([{
+                        author_id: currentUserProfile?.id || null,
+                        author_name: currentUser || 'Anonymous',
+                        text
+                    }]);
+
+                if (error) throw error;
+
+                document.getElementById('feedbackText').value = '';
+                showToast('Thank you for your feedback!', 'success');
+                await loadFeedback();
+            } catch (error) {
+                console.error('Submit feedback error:', error);
+                showToast('Failed to submit feedback', 'error');
+            }
+        }
+
+        async function deleteFeedback(feedbackId) {
+            if (!currentUserProfile || currentUserProfile.user_type !== 'management') {
+                showToast('Unauthorized', 'error');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this feedback?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('feedback')
+                    .delete()
+                    .eq('id', feedbackId);
+
+                if (error) throw error;
+
+                showToast('Feedback deleted', 'success');
+                await loadFeedback();
+            } catch (error) {
+                console.error('Delete feedback error:', error);
+                showToast('Failed to delete feedback', 'error');
+            }
+        }
+
+        // Utility Functions
+        async function logActivity(action, details) {
+            try {
+                await supabase.from('activity_log').insert([{
+                    action,
+                    details,
+                    user_id: currentUserProfile?.id || null
+                }]);
+            } catch (error) {
+                console.error('Error logging activity:', error);
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
+            }
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                const tabText = tab.textContent.toLowerCase();
+                if ((tabName === 'home' && tabText.includes('home')) ||
+                    (tabName === 'events' && tabText.includes('events') && !tabText.includes('my')) ||
+                    (tabName === 'enrolled' && tabText.includes('my events')) ||
+                    (tabName === 'gallery' && tabText.includes('gallery')) ||
+                    (tabName === 'feedback' && tabText.includes('feedback')) ||
+                    (tabName === 'dashboard' && tabText.includes('dashboard'))) {
+                    tab.classList.add('active');
+                }
+            });
+
+if(tabName==='verification') loadVerificationList();
+
+
+            if (tabName === 'enrolled') {
+                loadEnrolledEvents();
+            } else if (tabName === 'dashboard') {
+                loadEvents();
+            }
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                const errorDivs = modal.querySelectorAll('[id$="Error"]');
+                errorDivs.forEach(div => div.innerHTML = '');
+            }
+        }
+
+        function showLogin() {
+            hideModal('signupModal');
+            showModal('loginModal');
+        }
+
+        function showSignup() {
+            hideModal('loginModal');
+            showModal('signupModal');
+        }
+
+        function showToast(message, type = 'info') {
+            const bgColor = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#667eea';
+            
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${bgColor};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
